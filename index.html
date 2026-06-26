@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Advantage — Client Dashboard</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="logo.png" alt="SEO Advantage" class="logo-img">
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Performance</div>
+
+      <div class="nav-item active" data-view="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        All clients
+      </div>
+
+      <div class="nav-item" data-view="trends">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        Trend comparison
+      </div>
+
+      <div class="nav-item" data-view="drilldown">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Client detail
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      Data via BigQuery → Sheets<br>
+      Updated nightly · 3am AEST
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">All clients</div>
+        <div class="topbar-meta" id="topbar-meta">Organic traffic and conversions — month on month</div>
+      </div>
+      <div class="topbar-right">
+        <div class="data-badge" id="data-badge">
+          <span class="dot"></span>
+          Mock data
+        </div>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ── View: Overview ── -->
+      <div id="view-overview" class="view active">
+
+        <div class="summary-bar">
+          <div class="stat-card">
+            <div class="label">Total organic sessions</div>
+            <div class="value" id="stat-sessions">—</div>
+            <div id="stat-portfolio"></div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Total conversions</div>
+            <div class="value" id="stat-conversions">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Active clients</div>
+            <div class="value" id="stat-client-count">—</div>
+            <div class="delta flat">Mock data · 60 live</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Clients needing attention</div>
+            <div class="value" id="stat-alerts">—</div>
+            <div class="delta flat" style="font-size:11px;margin-top:4px">Sessions or conversions &gt;15% down</div>
+          </div>
+        </div>
+
+        <div class="controls-bar">
+          <button class="filter-btn active" onclick="setFilter('all', this)">All clients</button>
+          <button class="filter-btn" onclick="setFilter('alert', this)">Needs attention</button>
+          <button class="filter-btn" onclick="setFilter('up', this)">Improving</button>
+          <div class="controls-sep"></div>
+          <div class="sort-group">
+            <label>Sort by</label>
+            <select onchange="setSort(this.value)">
+              <option value="sessions">Sessions</option>
+              <option value="drop">Biggest drop</option>
+              <option value="name">Client name</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:22%">Client</th>
+                <th class="r" style="width:11%">Sessions</th>
+                <th class="r" style="width:9%">MoM</th>
+                <th class="r" style="width:11%">Conversions</th>
+                <th class="r" style="width:9%">MoM</th>
+                <th class="c" style="width:18%">24-month trend</th>
+                <th class="r" style="width:10%">Status</th>
+              </tr>
+            </thead>
+            <tbody id="client-tbody">
+              <tr><td colspan="7"><div class="loading"><div class="spinner"></div>Loading clients…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ── View: Trends ── -->
+      <div id="view-trends" class="view">
+        <div class="trend-wrap">
+          <div class="trend-header">
+            <div>
+              <div class="trend-title">Organic performance — 24 months</div>
+              <div class="trend-sub">Toggle clients and metrics · algorithm updates marked</div>
+            </div>
+            <div class="trend-controls">
+              <button class="metric-pill active" onclick="setMetric('sessions', this)">Sessions</button>
+              <button class="metric-pill active" onclick="setMetric('conversions', this)">Conversions</button>
+              <button class="metric-pill" onclick="setMetric('avg_position', this)">Avg. position</button>
+            </div>
+          </div>
+
+          <div class="client-toggles" id="client-toggles"></div>
+
+          <div class="chart-container">
+            <canvas id="trend-chart"></canvas>
+          </div>
+
+          <!-- Algorithm update legend -->
+          <div class="update-legend" id="update-legend"></div>
+
+          <!-- Line style legend -->
+          <div class="dash-legend">
+            <div class="dash-legend-item"><div class="dash-line"></div>Sessions</div>
+            <div class="dash-legend-item"><div class="dash-line dashed"></div>Conversions</div>
+            <div class="dash-legend-item"><div class="dash-line dotted"></div>Avg. position (lower = better)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── View: Drilldown ── -->
+      <div id="view-drilldown" class="view">
+
+        <div class="drilldown-header">
+          <button class="back-btn" onclick="goBack()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            All clients
+          </button>
+          <div class="drilldown-title" id="drilldown-name">Select a client</div>
+        </div>
+
+        <div class="drilldown-grid">
+          <div class="stat-card">
+            <div class="label">Organic sessions</div>
+            <div class="value" id="dd-sessions">—</div>
+            <div id="dd-sessions-delta"></div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Total conversions</div>
+            <div class="value" id="dd-conversions">—</div>
+            <div id="dd-conv-delta"></div>
+          </div>
+        </div>
+
+        <div class="conversion-breakdown">
+          <div class="conv-card" id="conv-appraisal">
+            <div class="conv-label">—</div>
+            <div class="conv-value">—</div>
+            <div class="conv-bar-wrap"><div class="conv-bar" style="width:0%"></div></div>
+          </div>
+          <div class="conv-card" id="conv-listing">
+            <div class="conv-label">—</div>
+            <div class="conv-value">—</div>
+            <div class="conv-bar-wrap"><div class="conv-bar" style="width:0%"></div></div>
+          </div>
+          <div class="conv-card" id="conv-phone">
+            <div class="conv-label">—</div>
+            <div class="conv-value">—</div>
+            <div class="conv-bar-wrap"><div class="conv-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">24-month organic performance</div>
+          <div class="chart-container">
+            <canvas id="drill-chart"></canvas>
+          </div>
+        </div>
+
+        <div style="text-align:center;padding:4px 0 0;font-size:11px;color:var(--text-muted)">
+          Click any client row in the overview to load their detail here
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+<script src="data/updates.js"></script>
+<script src="data/mock.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  // Render algorithm update legend with colour coding
+  const leg = document.getElementById('update-legend');
+  if (leg && typeof ALGORITHM_UPDATES !== 'undefined') {
+    const seen = {};
+    ALGORITHM_UPDATES.forEach(u => {
+      const key = UPDATE_LABELS[u.type];
+      if (!seen[key]) {
+        seen[key] = true;
+        const item = document.createElement('div');
+        item.className = 'update-legend-item';
+        item.innerHTML = `<span class="vline" style="background:${UPDATE_COLORS[u.type]}"></span>${key}`;
+        leg.appendChild(item);
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>
